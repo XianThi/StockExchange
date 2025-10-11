@@ -87,14 +87,14 @@ namespace StockExchange.DAL
                     Name = item.ad,
                     Description = "",
                     Price =  0,
-                    Quantity = 0,
+                    TotalShares = 0,
                     LastUpdated = DateTime.UtcNow
                 };
                 packet.Add(stock);
             }
             const string sql = @"
-            INSERT INTO Stocks (Symbol, Name, Description, Price, Quantity, LastUpdated)
-            VALUES (@Symbol, @Name, @Description, @Price, @Quantity, @LastUpdated)";
+            INSERT INTO Stocks (Symbol, Name, Description, Price, TotalShares, LastUpdated)
+            VALUES (@Symbol, @Name, @Description, @Price, @TotalShares, @LastUpdated)";
             var affectedRows = await _dbConnection.ExecuteAsync(sql, packet);
 
             //("{Count} ürün veritabanına eklendi", affectedRows);

@@ -20,6 +20,8 @@ namespace StockService
         
         private string DescriptionField;
         
+        private int IdField;
+        
         private System.DateTime LastUpdatedField;
         
         private string NameField;
@@ -28,9 +30,9 @@ namespace StockService
         
         private StockService.StockPriceHistory[] PriceHistoryField;
         
-        private int QuantityField;
-        
         private string SymbolField;
+        
+        private int TotalSharesField;
         
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string Description
@@ -42,6 +44,19 @@ namespace StockService
             set
             {
                 this.DescriptionField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Id
+        {
+            get
+            {
+                return this.IdField;
+            }
+            set
+            {
+                this.IdField = value;
             }
         }
         
@@ -98,19 +113,6 @@ namespace StockService
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public int Quantity
-        {
-            get
-            {
-                return this.QuantityField;
-            }
-            set
-            {
-                this.QuantityField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
         public string Symbol
         {
             get
@@ -122,6 +124,19 @@ namespace StockService
                 this.SymbolField = value;
             }
         }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int TotalShares
+        {
+            get
+            {
+                return this.TotalSharesField;
+            }
+            set
+            {
+                this.TotalSharesField = value;
+            }
+        }
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -130,28 +145,15 @@ namespace StockService
     public partial class StockPriceHistory : object
     {
         
-        private System.DateTime DateField;
-        
         private int IdField;
         
         private decimal PriceField;
         
+        private System.DateTime RecordedAtField;
+        
         private StockService.Stock StockField;
         
         private int StockIdField;
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime Date
-        {
-            get
-            {
-                return this.DateField;
-            }
-            set
-            {
-                this.DateField = value;
-            }
-        }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
         public int Id
@@ -176,6 +178,19 @@ namespace StockService
             set
             {
                 this.PriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime RecordedAt
+        {
+            get
+            {
+                return this.RecordedAtField;
+            }
+            set
+            {
+                this.RecordedAtField = value;
             }
         }
         
@@ -728,9 +743,675 @@ namespace StockService
         
         private int QuantityField;
         
+        private int StockIdField;
+        
+        private int UserIdField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Quantity
+        {
+            get
+            {
+                return this.QuantityField;
+            }
+            set
+            {
+                this.QuantityField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int StockId
+        {
+            get
+            {
+                return this.StockIdField;
+            }
+            set
+            {
+                this.StockIdField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UserId
+        {
+            get
+            {
+                return this.UserIdField;
+            }
+            set
+            {
+                this.UserIdField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="BuyStockResponse", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.StockModel")]
+    public partial class BuyStockResponse : object
+    {
+        
+        private decimal ExecutedPriceField;
+        
+        private string MessageField;
+        
+        private decimal NewBalanceField;
+        
+        private bool SuccessField;
+        
+        private decimal TotalAmountField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal ExecutedPrice
+        {
+            get
+            {
+                return this.ExecutedPriceField;
+            }
+            set
+            {
+                this.ExecutedPriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Message
+        {
+            get
+            {
+                return this.MessageField;
+            }
+            set
+            {
+                this.MessageField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal NewBalance
+        {
+            get
+            {
+                return this.NewBalanceField;
+            }
+            set
+            {
+                this.NewBalanceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Success
+        {
+            get
+            {
+                return this.SuccessField;
+            }
+            set
+            {
+                this.SuccessField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalAmount
+        {
+            get
+            {
+                return this.TotalAmountField;
+            }
+            set
+            {
+                this.TotalAmountField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="PortfolioResponse", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.PortfolioModel")]
+    public partial class PortfolioResponse : object
+    {
+        
+        private StockService.PortfolioItem[] ItemsField;
+        
+        private string MessageField;
+        
+        private bool SuccessField;
+        
+        private StockService.PortfolioSummary SummaryField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public StockService.PortfolioItem[] Items
+        {
+            get
+            {
+                return this.ItemsField;
+            }
+            set
+            {
+                this.ItemsField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Message
+        {
+            get
+            {
+                return this.MessageField;
+            }
+            set
+            {
+                this.MessageField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Success
+        {
+            get
+            {
+                return this.SuccessField;
+            }
+            set
+            {
+                this.SuccessField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public StockService.PortfolioSummary Summary
+        {
+            get
+            {
+                return this.SummaryField;
+            }
+            set
+            {
+                this.SummaryField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="PortfolioSummary", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.PortfolioModel")]
+    public partial class PortfolioSummary : object
+    {
+        
+        private decimal DailyProfitLossField;
+        
+        private StockService.PortfolioItem[] ItemsField;
+        
+        private decimal TotalInvestmentField;
+        
+        private decimal TotalPortfolioValueField;
+        
+        private decimal TotalProfitLossField;
+        
+        private decimal TotalProfitLossPercentField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal DailyProfitLoss
+        {
+            get
+            {
+                return this.DailyProfitLossField;
+            }
+            set
+            {
+                this.DailyProfitLossField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public StockService.PortfolioItem[] Items
+        {
+            get
+            {
+                return this.ItemsField;
+            }
+            set
+            {
+                this.ItemsField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalInvestment
+        {
+            get
+            {
+                return this.TotalInvestmentField;
+            }
+            set
+            {
+                this.TotalInvestmentField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalPortfolioValue
+        {
+            get
+            {
+                return this.TotalPortfolioValueField;
+            }
+            set
+            {
+                this.TotalPortfolioValueField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalProfitLoss
+        {
+            get
+            {
+                return this.TotalProfitLossField;
+            }
+            set
+            {
+                this.TotalProfitLossField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalProfitLossPercent
+        {
+            get
+            {
+                return this.TotalProfitLossPercentField;
+            }
+            set
+            {
+                this.TotalProfitLossPercentField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="PortfolioItem", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.PortfolioModel")]
+    public partial class PortfolioItem : object
+    {
+        
+        private decimal CurrentPriceField;
+        
+        private decimal CurrentValueField;
+        
+        private string DescriptionField;
+        
+        private string NameField;
+        
+        private decimal ProfitLossField;
+        
+        private decimal ProfitLossPercentField;
+        
+        private decimal PurchasePriceField;
+        
+        private System.DateTime PurchasedAtField;
+        
+        private int QuantityField;
+        
+        private string SymbolField;
+        
+        private decimal TotalCostField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal CurrentPrice
+        {
+            get
+            {
+                return this.CurrentPriceField;
+            }
+            set
+            {
+                this.CurrentPriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal CurrentValue
+        {
+            get
+            {
+                return this.CurrentValueField;
+            }
+            set
+            {
+                this.CurrentValueField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Description
+        {
+            get
+            {
+                return this.DescriptionField;
+            }
+            set
+            {
+                this.DescriptionField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Name
+        {
+            get
+            {
+                return this.NameField;
+            }
+            set
+            {
+                this.NameField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal ProfitLoss
+        {
+            get
+            {
+                return this.ProfitLossField;
+            }
+            set
+            {
+                this.ProfitLossField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal ProfitLossPercent
+        {
+            get
+            {
+                return this.ProfitLossPercentField;
+            }
+            set
+            {
+                this.ProfitLossPercentField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal PurchasePrice
+        {
+            get
+            {
+                return this.PurchasePriceField;
+            }
+            set
+            {
+                this.PurchasePriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime PurchasedAt
+        {
+            get
+            {
+                return this.PurchasedAtField;
+            }
+            set
+            {
+                this.PurchasedAtField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Quantity
+        {
+            get
+            {
+                return this.QuantityField;
+            }
+            set
+            {
+                this.QuantityField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Symbol
+        {
+            get
+            {
+                return this.SymbolField;
+            }
+            set
+            {
+                this.SymbolField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalCost
+        {
+            get
+            {
+                return this.TotalCostField;
+            }
+            set
+            {
+                this.TotalCostField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="TransactionHistoryResponse", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.TransactionMode" +
+        "l")]
+    public partial class TransactionHistoryResponse : object
+    {
+        
+        private string MessageField;
+        
+        private bool SuccessField;
+        
+        private StockService.TransactionHistory[] TransactionsField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Message
+        {
+            get
+            {
+                return this.MessageField;
+            }
+            set
+            {
+                this.MessageField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Success
+        {
+            get
+            {
+                return this.SuccessField;
+            }
+            set
+            {
+                this.SuccessField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public StockService.TransactionHistory[] Transactions
+        {
+            get
+            {
+                return this.TransactionsField;
+            }
+            set
+            {
+                this.TransactionsField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="TransactionHistory", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.TransactionMode" +
+        "l")]
+    public partial class TransactionHistory : object
+    {
+        
+        private int IdField;
+        
+        private decimal PriceField;
+        
+        private int QuantityField;
+        
+        private string StockNameField;
+        
+        private string SymbolField;
+        
+        private decimal TotalAmountField;
+        
+        private System.DateTime TransactionDateField;
+        
+        private string TypeField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Id
+        {
+            get
+            {
+                return this.IdField;
+            }
+            set
+            {
+                this.IdField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal Price
+        {
+            get
+            {
+                return this.PriceField;
+            }
+            set
+            {
+                this.PriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Quantity
+        {
+            get
+            {
+                return this.QuantityField;
+            }
+            set
+            {
+                this.QuantityField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string StockName
+        {
+            get
+            {
+                return this.StockNameField;
+            }
+            set
+            {
+                this.StockNameField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Symbol
+        {
+            get
+            {
+                return this.SymbolField;
+            }
+            set
+            {
+                this.SymbolField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalAmount
+        {
+            get
+            {
+                return this.TotalAmountField;
+            }
+            set
+            {
+                this.TotalAmountField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime TransactionDate
+        {
+            get
+            {
+                return this.TransactionDateField;
+            }
+            set
+            {
+                this.TransactionDateField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Type
+        {
+            get
+            {
+                return this.TypeField;
+            }
+            set
+            {
+                this.TypeField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="SellRequest", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models")]
+    public partial class SellRequest : object
+    {
+        
+        private decimal PriceField;
+        
+        private int QuantityField;
+        
         private string SymbolField;
         
         private int UserIdField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal Price
+        {
+            get
+            {
+                return this.PriceField;
+            }
+            set
+            {
+                this.PriceField = value;
+            }
+        }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
         public int Quantity
@@ -774,15 +1455,17 @@ namespace StockService
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="BuyStockResponse", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.StockModel")]
-    public partial class BuyStockResponse : object
+    [System.Runtime.Serialization.DataContractAttribute(Name="SellStockResponse", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.StockModel")]
+    public partial class SellStockResponse : object
     {
         
         private string MessageField;
         
-        private int SuccessField;
+        private decimal NewBalanceField;
         
-        private StockService.User UpdatedUserField;
+        private bool SuccessField;
+        
+        private decimal TotalAmountField;
         
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string Message
@@ -798,7 +1481,20 @@ namespace StockService
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public int Success
+        public decimal NewBalance
+        {
+            get
+            {
+                return this.NewBalanceField;
+            }
+            set
+            {
+                this.NewBalanceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Success
         {
             get
             {
@@ -811,15 +1507,313 @@ namespace StockService
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public StockService.User UpdatedUser
+        public decimal TotalAmount
         {
             get
             {
-                return this.UpdatedUserField;
+                return this.TotalAmountField;
             }
             set
             {
-                this.UpdatedUserField = value;
+                this.TotalAmountField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="BuyOrderRequest", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.OrderModel")]
+    public partial class BuyOrderRequest : object
+    {
+        
+        private decimal MaxPriceField;
+        
+        private int QuantityField;
+        
+        private int StockIdField;
+        
+        private int UserIdField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal MaxPrice
+        {
+            get
+            {
+                return this.MaxPriceField;
+            }
+            set
+            {
+                this.MaxPriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Quantity
+        {
+            get
+            {
+                return this.QuantityField;
+            }
+            set
+            {
+                this.QuantityField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int StockId
+        {
+            get
+            {
+                return this.StockIdField;
+            }
+            set
+            {
+                this.StockIdField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UserId
+        {
+            get
+            {
+                return this.UserIdField;
+            }
+            set
+            {
+                this.UserIdField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="OrderResult", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.OrderModel")]
+    public partial class OrderResult : object
+    {
+        
+        private string MessageField;
+        
+        private bool SuccessField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Message
+        {
+            get
+            {
+                return this.MessageField;
+            }
+            set
+            {
+                this.MessageField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Success
+        {
+            get
+            {
+                return this.SuccessField;
+            }
+            set
+            {
+                this.SuccessField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="SellOrderRequest", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.OrderModel")]
+    public partial class SellOrderRequest : object
+    {
+        
+        private decimal MinPriceField;
+        
+        private int QuantityField;
+        
+        private int StockIdField;
+        
+        private string SymbolField;
+        
+        private int UserIdField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal MinPrice
+        {
+            get
+            {
+                return this.MinPriceField;
+            }
+            set
+            {
+                this.MinPriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Quantity
+        {
+            get
+            {
+                return this.QuantityField;
+            }
+            set
+            {
+                this.QuantityField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int StockId
+        {
+            get
+            {
+                return this.StockIdField;
+            }
+            set
+            {
+                this.StockIdField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Symbol
+        {
+            get
+            {
+                return this.SymbolField;
+            }
+            set
+            {
+                this.SymbolField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UserId
+        {
+            get
+            {
+                return this.UserIdField;
+            }
+            set
+            {
+                this.UserIdField = value;
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="PurchaseDetail", Namespace="http://schemas.datacontract.org/2004/07/StockExchange.Core.Models.OrderModel")]
+    public partial class PurchaseDetail : object
+    {
+        
+        private decimal CurrentPriceField;
+        
+        private decimal CurrentValueField;
+        
+        private decimal ProfitLossField;
+        
+        private decimal PurchasePriceField;
+        
+        private System.DateTime PurchasedAtField;
+        
+        private int QuantityField;
+        
+        private decimal TotalCostField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal CurrentPrice
+        {
+            get
+            {
+                return this.CurrentPriceField;
+            }
+            set
+            {
+                this.CurrentPriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal CurrentValue
+        {
+            get
+            {
+                return this.CurrentValueField;
+            }
+            set
+            {
+                this.CurrentValueField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal ProfitLoss
+        {
+            get
+            {
+                return this.ProfitLossField;
+            }
+            set
+            {
+                this.ProfitLossField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal PurchasePrice
+        {
+            get
+            {
+                return this.PurchasePriceField;
+            }
+            set
+            {
+                this.PurchasePriceField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime PurchasedAt
+        {
+            get
+            {
+                return this.PurchasedAtField;
+            }
+            set
+            {
+                this.PurchasedAtField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Quantity
+        {
+            get
+            {
+                return this.QuantityField;
+            }
+            set
+            {
+                this.QuantityField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public decimal TotalCost
+        {
+            get
+            {
+                return this.TotalCostField;
+            }
+            set
+            {
+                this.TotalCostField = value;
             }
         }
     }
@@ -847,8 +1841,29 @@ namespace StockService
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/Login", ReplyAction="http://tempuri.org/IStockService/LoginResponse")]
         System.Threading.Tasks.Task<StockService.LoginResponse> LoginAsync(StockService.LoginRequest request);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/GetPriceHistoryWithSymbol", ReplyAction="http://tempuri.org/IStockService/GetPriceHistoryWithSymbolResponse")]
+        System.Threading.Tasks.Task<StockService.StockPriceHistory[]> GetPriceHistoryWithSymbolAsync(string symbol);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/BuyStock", ReplyAction="http://tempuri.org/IStockService/BuyStockResponse")]
         System.Threading.Tasks.Task<StockService.BuyStockResponse> BuyStockAsync(StockService.BuyStockRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/GetPortfolio", ReplyAction="http://tempuri.org/IStockService/GetPortfolioResponse")]
+        System.Threading.Tasks.Task<StockService.PortfolioResponse> GetPortfolioAsync(int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/GetTransactionHistory", ReplyAction="http://tempuri.org/IStockService/GetTransactionHistoryResponse")]
+        System.Threading.Tasks.Task<StockService.TransactionHistoryResponse> GetTransactionHistoryAsync(int userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/SellStock", ReplyAction="http://tempuri.org/IStockService/SellStockResponse")]
+        System.Threading.Tasks.Task<StockService.SellStockResponse> SellStockAsync(StockService.SellRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/AddBuyOrder", ReplyAction="http://tempuri.org/IStockService/AddBuyOrderResponse")]
+        System.Threading.Tasks.Task<StockService.OrderResult> AddBuyOrderAsync(StockService.BuyOrderRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/AddSellOrder", ReplyAction="http://tempuri.org/IStockService/AddSellOrderResponse")]
+        System.Threading.Tasks.Task<StockService.OrderResult> AddSellOrderAsync(StockService.SellOrderRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IStockService/GetUserStockPurchaseHistory", ReplyAction="http://tempuri.org/IStockService/GetUserStockPurchaseHistoryResponse")]
+        System.Threading.Tasks.Task<StockService.PurchaseDetail[]> GetUserStockPurchaseHistoryAsync(int userId, string stockSymbol);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
@@ -931,9 +1946,44 @@ namespace StockService
             return base.Channel.LoginAsync(request);
         }
         
+        public System.Threading.Tasks.Task<StockService.StockPriceHistory[]> GetPriceHistoryWithSymbolAsync(string symbol)
+        {
+            return base.Channel.GetPriceHistoryWithSymbolAsync(symbol);
+        }
+        
         public System.Threading.Tasks.Task<StockService.BuyStockResponse> BuyStockAsync(StockService.BuyStockRequest request)
         {
             return base.Channel.BuyStockAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<StockService.PortfolioResponse> GetPortfolioAsync(int userId)
+        {
+            return base.Channel.GetPortfolioAsync(userId);
+        }
+        
+        public System.Threading.Tasks.Task<StockService.TransactionHistoryResponse> GetTransactionHistoryAsync(int userId)
+        {
+            return base.Channel.GetTransactionHistoryAsync(userId);
+        }
+        
+        public System.Threading.Tasks.Task<StockService.SellStockResponse> SellStockAsync(StockService.SellRequest request)
+        {
+            return base.Channel.SellStockAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<StockService.OrderResult> AddBuyOrderAsync(StockService.BuyOrderRequest request)
+        {
+            return base.Channel.AddBuyOrderAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<StockService.OrderResult> AddSellOrderAsync(StockService.SellOrderRequest request)
+        {
+            return base.Channel.AddSellOrderAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<StockService.PurchaseDetail[]> GetUserStockPurchaseHistoryAsync(int userId, string stockSymbol)
+        {
+            return base.Channel.GetUserStockPurchaseHistoryAsync(userId, stockSymbol);
         }
         
         public virtual System.Threading.Tasks.Task OpenAsync()

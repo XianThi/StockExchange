@@ -11,6 +11,8 @@ namespace StockExchange.Core.Models.StockModel
     public class Stock
     {
         [DataMember]
+        public int Id { get; set; }
+        [DataMember]
         public string Symbol { get; set; }
         [DataMember]
         public string Name { get; set; }
@@ -19,7 +21,7 @@ namespace StockExchange.Core.Models.StockModel
         [DataMember]
         public decimal Price { get; set; }
         [DataMember]
-        public int Quantity { get; set; }
+        public int TotalShares { get; set; }
         [DataMember]
         public DateTime LastUpdated { get; set; }
         [DataMember]

@@ -14,7 +14,7 @@ namespace StockExchange.Core.Models
         public int StockId { get; set; }
         public Stock Stock { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime RecordedAt { get; set; }
         public decimal Price { get; set; }
     }
 }

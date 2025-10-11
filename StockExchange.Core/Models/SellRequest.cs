@@ -5,18 +5,18 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StockExchange.Core.Models.StockModel
+namespace StockExchange.Core.Models
 {
     [DataContract]
-    public class BuyStockRequest
+    public class SellRequest
     {
         [DataMember]
         public int UserId { get; set; }
-
         [DataMember]
-        public int StockId { get; set; }
-
+        public string Symbol { get; set; }
         [DataMember]
         public int Quantity { get; set; }
+        [DataMember]
+        public decimal Price { get; set; }
     }
 }

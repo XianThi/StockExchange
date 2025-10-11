@@ -9,7 +9,7 @@ using System.Data;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IDbConnection>(db => new SqlConnection(connectionString));
-
+builder.Services.AddHostedService<StockTaskService>();
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<IStockService,StockService>();
 builder.Services.AddScoped<IDatabaseService, DatabaseService>();

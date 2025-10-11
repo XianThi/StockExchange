@@ -77,7 +77,7 @@
                                     Hisse Adı
                                     <i class="fas fa-sort ms-1"></i>
                                 </th>
-                                <th width="150" onclick="changeSort('price')" style="cursor: pointer;">
+                                <th width="250" onclick="changeSort('price')" style="cursor: pointer;">
                                     Fiyat (TL)
                                     <i class="fas fa-sort ms-1"></i>
                                 </th>
@@ -110,34 +110,238 @@
     </div>
 </div>
 
+<div class="modal fade" id="stockDetailModal" tabindex="-1" aria-labelledby="stockDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="stockDetailModalLabel">
+                    <i class="fas fa-chart-line me-2"></i>
+                    <span id="modalStockName"></span>
+                    <small id="modalStockSymbol" class="ms-2 opacity-75"></small>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-muted mb-2">Güncel Fiyat</h6>
+                                <h3 id="modalCurrentPrice" class="text-primary fw-bold mb-0">0.00 TL</h3>
+                                <div id="modalPriceChange" class="mt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-muted mb-2">Değişim</h6>
+                                <h4 id="modalChangePercent" class="fw-bold mb-0">%0.00</h4>
+                                <small id="modalChangeAmount" class="text-muted"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-muted mb-2">Son Güncelleme</h6>
+                                <h6 id="modalLastUpdated" class="fw-bold mb-0 text-dark">-</h6>
+                                <small class="text-muted" id="modalTimeAgo"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-muted mb-2">Geçmiş Veri</h6>
+                                <h6 id="modalHistoryCount" class="fw-bold mb-0 text-dark">0 Kayıt</h6>
+                                <small class="text-muted">Fiyat geçmişi</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-chart-line me-2"></i>Fiyat Değişim Grafiği
+                                </h6>
+                                <small class="text-muted">En yeni veri sağda gösterilir</small>
+                            </div>
+                            <div class="card-body">
+                                <div id="priceChartContainer" style="height: 300px;">
+                                    <canvas id="priceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-history me-2"></i>Detaylı Fiyat Geçmişi
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th width="120">Tarih</th>
+                                                <th width="120">Fiyat (TL)</th>
+                                                <th width="100">Değişim</th>
+                                                <th width="80">Değişim %</th>
+                                                <th>Durum</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="modalPriceHistory">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4" id="modalDescriptionSection" style="display: none;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Açıklama
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <p id="modalDescription" class="mb-0"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Kapat
+                </button>
+                <button type="button" class="btn btn-primary" onclick="buyFromModal()">
+                    <i class="fas fa-cart-shopping me-1"></i>Satın Al
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="buyOrderModal" tabindex="-1" aria-labelledby="buyOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="buyOrderModalLabel">
+                    <i class="fas fa-cart-plus me-2"></i>Alım Emri Ver
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Sembol</label>
+                    <input type="text" class="form-control" id="buyStockSymbol" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Hisse Adı</label>
+                    <input type="text" class="form-control" id="buyStockName" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Miktar (Lot)</label>
+                    <input type="number" class="form-control" id="buyQuantity" min="1" value="1" placeholder="Almak istediğiniz lot miktarı">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Maksimum Fiyat (TL)</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="buyMaxPrice" step="0.01" min="0.01" placeholder="En fazla ödemeye razı olduğunuz fiyat">
+                        <span class="input-group-text">TL</span>
+                    </div>
+                    <div class="form-text">
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            Mevcut fiyat: <span id="currentMarketPrice" class="fw-bold">0.00 TL</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tahmini Tutar</label>
+                    <input type="text" class="form-control" id="estimatedAmount" readonly>
+                </div>
+                <div class="alert alert-info">
+                    <small>
+                        <i class="fas fa-lightbulb me-1"></i>
+                        <strong>Alım emri:</strong> Belirlediğiniz fiyat ve altındaki satış emirleriyle eşleşirse hisseleriniz otomatik olarak alınacaktır.
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-success" onclick="confirmBuyOrder()">Emri Ver</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 @section Scripts{
     <script>
         let allStocks = [];
+        let previousStocks = [];
         let currentPage = 1;
         let pageSize = 25;
         let currentSort = 'symbol';
         let currentSortDirection = 'asc';
         let currentSearch = '';
+        let autoRefreshInterval;
+        let currentModalStock = null;
+        let priceChart = null;
+        let currentBuyStock = null;
 
         document.addEventListener('DOMContentLoaded', function () {
             loadStocks();
+            startAutoRefresh();
         });
 
+        window.addEventListener('beforeunload', stopAutoRefresh);
+        
+        document.getElementById('stockDetailModal').addEventListener('hidden.bs.modal', function () {
+            if (priceChart) {
+                priceChart.destroy();
+                priceChart = null;
+            }
+        });
+
+
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                loadStocks();
+            }, 60000);
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        }
         async function loadStocks() {
-            showLoading(true);
+            showLoading(false); //oto refresh ile beraber uygun calısmadı. gerekli değil artık.
             
             try {
                 const response = await fetch(`/Stock/GetStocks?page=${currentPage}&pageSize=${pageSize}`);
                 if (response.ok) {
                     const data = await response.json();
-                    allStocks = data.stocks;
-                    
+                    const newStocks = data.stocks;
+                    const changedStocks = findChangedStocks(previousStocks, newStocks);
+                    allStocks = newStocks;
                     if (currentSearch) {
                         filterAndSortStocks();
                     } else {
-                        displayStocks(allStocks);
+                        displayStocks(allStocks,changedStocks);
                     }
-                    
+                    previousStocks = JSON.parse(JSON.stringify(newStocks));
                     updatePagination(data.totalPages);
                     updateTableInfo(data.totalCount);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -151,8 +355,26 @@
                 showLoading(false);
             }
         }
+        function findChangedStocks(previous, current) {
+            const changed = {};
 
-        function displayStocks(stocks) {
+            if (!previous || previous.length === 0) return changed;
+
+            current.forEach(stock => {
+                const prevStock = previous.find(p => p.symbol === stock.symbol);
+                if (prevStock && prevStock.price !== stock.price) {
+                    changed[stock.symbol] = {
+                        oldPrice: prevStock.price,
+                        newPrice: stock.price,
+                        change: stock.price - prevStock.price
+                    };
+                }
+            });
+
+            return changed;
+        }
+
+        function displayStocks(stocks, changedStocks = {}) {
             const tbody = document.getElementById('stocksTableBody');
             
             if (stocks.length === 0) {
@@ -168,12 +390,43 @@
                 return;
             }
 
-            tbody.innerHTML = stocks.map((stock, index) => `
-                <tr>
+            tbody.innerHTML = stocks.map((stock, index) => {
+                const isChanged = changedStocks[stock.symbol];
+                const rowClass = isChanged ? 'highlight-change' : '';
+                var price = "";
+                var percentDelta = stock.priceHistory.length > 1 ? ((stock.price - stock.priceHistory[1].price) / stock.priceHistory[1].price * 100).toFixed(2) : '0.00';
+                if(currentPriceStatus(stock) === 'up'){
+                    price = `<span class="h5 mb-0 text-success fw-bold">${stock.price.toFixed(2)} TL </span> <span class="h8 mb-0 text-success">(%${percentDelta}) </span><i class="fas fa-arrow-up text-success me-1"></i>`;
+                } else if(currentPriceStatus(stock) === 'down'){
+                    price = `<span class="h5 mb-0 text-danger fw-bold">${stock.price.toFixed(2)} TL </span><span class="h8 mb-0 text-danger">(%${percentDelta}) </span><i class="fas fa-arrow-down text-danger me-1"></i>`;
+                } else {
+                    price = `<span class="h5 mb-0 fw-bold">${stock.price.toFixed(2)} TL </span><i class="fas fa-minus text-secondary me-1"></i>`;
+                }
+                if (isChanged) {
+                    const changeType = isChanged.change > 0 ? 'up' : 'down';
+                    const changeIcon = changeType === 'up' ? 'fa-arrow-up' : 'fa-arrow-down';
+                    const changeClass = changeType === 'up' ? 'text-success' : 'text-danger';
+                    price = `
+                        <div class="price-change-container">
+                            <span class="h5 mb-0 ${changeClass} fw-bold blink-highlight">
+                                ${stock.price.toFixed(2)} TL
+                            </span>
+                            <span class="h8 mb-0 ${changeClass}">
+                                (%${percentDelta})
+                            </span>
+                            <i class="fas ${changeIcon} ${changeClass} me-1"></i>
+                            <small class="change-badge ${changeClass}">${isChanged.change > 0 ? '+' : ''}${isChanged.change.toFixed(2)}
+                            </small>
+                        </div>
+                    `;
+                }
+                return `
+                <tr class="${rowClass}" id="stock-${stock.symbol}">
                     <td>
                         <div class="d-flex align-items-center">
                             <span class="stock-symbol badge bg-primary bg-opacity-10 text-primary fs-6">${stock.symbol}</span>
-                        </div>
+                    ${isChanged ? '<span class="ms-2 change-indicator pulse"></span>' : ''}
+                </div>
                     </td>
                     <td>
                         <div>
@@ -186,43 +439,50 @@
                         </div>
                     </td>
                     <td>
-                        <span class="h5 mb-0 text-success fw-bold">${stock.price.toFixed(2)} TL</span>
+                        ${price}
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                            <span class="fw-bold text-primary me-2">${formatNumber(stock.quantity)}</span>
+                            <span class="fw-bold text-primary me-2">${formatNumber(stock.totalShares)}</span>
                             <small class="text-muted">lot</small>
                         </div>
                         <div>
-                            <small class="text-muted">${formatLotSize(stock.quantity)}</small>
+                            <small class="text-muted">${formatLotSize(stock.totalShares)}</small>
                         </div>
                     </td>
                     <td>
                         <div class="text-muted">
-                            <i class="fas fa-clock me-1"></i>
-                            ${formatDate(stock.lastUpdated)}
-                        </div>
+                    <i class="fas fa-clock me-1"></i>
+                    ${formatDate(stock.lastUpdated)}
+                    ${isChanged ? '<span class="ms-1 new-badge">YENİ</span>' : ''}
+                </div>
                     </td>
                     <td class="text-center">
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-outline-primary" title="Detaylar" onclick="showStockDetail('${stock.symbol}')">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn btn-outline-secondary" title="Fiyat Geçmişi" onclick="showPriceHistory('${stock.symbol}')">
-                                <i class="fas fa-chart-bar"></i>
-                            </button>
-                            <button class="btn btn-outline-info" title="Bilgiler" onclick="showStockInfo('${stock.symbol}')">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
-                            <button class="btn btn-outline-info" title="Satın al" onclick="buyStock('${stock.symbol}')">
+                            <button class="btn btn-outline-info" title="Satın al" onclick="buyStock('${stock.id}')">
                                 <i class="fas fa-cart-shopping"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
+            Object.keys(changedStocks).forEach(symbol => {
+                highlightRow(symbol);
+            });
         }
-
+        
+        function highlightRow(symbol) {
+            const row = document.getElementById(`stock-${symbol}`);
+            if (row) {
+                row.classList.add('highlight-change');
+                setTimeout(() => {
+                    row.classList.remove('highlight-change');
+                }, 3000);
+            }
+        }
         function changeSort(sortField) {
             if (currentSort === sortField) {
                 currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
@@ -335,7 +595,29 @@
             }
         }
 
+        function currentPriceStatus(stock){
+            if(stock.priceHistory.length >0){
+                const lastPrice = stock.priceHistory[1].price;
+                if(stock.price > lastPrice) return 'up';
+                if(stock.price < lastPrice) return 'down';
+            }
+            return 'stable';
+        }
+
         // Yardımcı fonksiyonlar
+
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+
+            if (diffMins < 1) return 'Az önce';
+            if (diffMins < 60) return `${diffMins} dakika önce`;
+            if (diffHours < 24) return `${diffHours} saat önce`;
+            return `${Math.floor(diffHours / 24)} gün önce`;
+        }
         function showAlert(message,type){
             var alertDiv = document.querySelector("#alertDiv");
             alertDiv.textContent = message;
@@ -357,11 +639,11 @@
 
         function formatLotSize(quantity) {
             if (quantity >= 1000000) {
-                return 'Büyük lot';
+                return 'Yüksek Hacim';
             } else if (quantity >= 100000) {
-                return 'Orta lot';
+                return 'Orta Hacim';
             } else if (quantity >= 10000) {
-                return 'Küçük lot';
+                return 'Küçük Hacim';
             }
             return 'Düşük lot';
         }
@@ -393,61 +675,333 @@
                 </tr>
             `;
         }
-
-        // İşlem butonları için fonksiyonlar
-        function showStockDetail(symbol) {
-            alert('Detay göster: ' + symbol);
+        
+        function buyFromModal() {
+            if (currentModalStock) {
+                buyStock(currentModalStock.id);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('stockDetailModal'));
+                modal.hide();
+            }
         }
+        async function showStockDetail(symbol) {
+            const stock = allStocks.find(s => s.symbol === symbol);
 
-        function showPriceHistory(symbol) {
-            alert('Fiyat geçmişi: ' + symbol);
-        }
-
-        function showStockInfo(symbol) {
-            alert('Hisse bilgisi: ' + symbol);
-        }
-
-        function buyStock(symbol){
-            var quantity = prompt('Kaç lot satın almak istiyorsunuz?', '1');
-            if(quantity === null) return;
-            quantity = parseInt(quantity);
-            if(isNaN(quantity) || quantity <= 0){
-                alert('Geçersiz lot sayısı.');
+            if (!stock) {
+                alert('Hisse bulunamadı!');
                 return;
             }
-            if(!symbol){
-                alert('Geçersiz hisse sembolü.');
+            const response = await fetch(`/Stock/GetPriceHistory?symbol=${stock.symbol}`);
+            if(response.ok){
+                stock.priceHistory = await response.json();
+            }
+            currentModalStock = stock;
+            populateModal(stock);
+            const modal = new bootstrap.Modal(document.getElementById('stockDetailModal'));
+            modal.show();
+        }
+
+        function populateModal(stock) {
+            document.getElementById('modalStockName').textContent = stock.name;
+            document.getElementById('modalStockSymbol').textContent = `(${stock.symbol})`;
+            document.getElementById('modalCurrentPrice').textContent = `${stock.price.toFixed(2)} TL`;
+            document.getElementById('modalLastUpdated').textContent = formatDate(stock.lastUpdated);
+            document.getElementById('modalTimeAgo').textContent = getTimeAgo(stock.lastUpdated);
+            document.getElementById('modalHistoryCount').textContent = `${stock.priceHistory.length} Kayıt`;
+            if (stock.description && stock.description.trim() !== '') {
+                document.getElementById('modalDescription').textContent = stock.description;
+                document.getElementById('modalDescriptionSection').style.display = 'block';
+            } else {
+                document.getElementById('modalDescriptionSection').style.display = 'none';
+            }
+            displayPriceChange(stock);
+            populatePriceHistory(stock.priceHistory);
+            createAdvancedPriceChart(stock.priceHistory);
+        }
+        
+        function createAdvancedPriceChart(priceHistory) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            if (priceChart) {
+                priceChart.destroy();
+            }
+
+            const reversedHistory = [...priceHistory].reverse();
+            const labels = reversedHistory.map((_, index) => `#${index + 1}`);
+            const prices = reversedHistory.map(record => record.price);
+            const isPositive = prices[prices.length - 1] > prices[0];
+            const backgroundColor = isPositive
+                ? 'rgba(40, 167, 69, 0.1)'
+                : 'rgba(220, 53, 69, 0.1)';
+            const borderColor = isPositive
+                ? 'rgba(40, 167, 69, 1)'
+                : 'rgba(220, 53, 69, 1)';
+            const pointBackgroundColor = isPositive
+                ? 'rgba(40, 167, 69, 1)'
+                : 'rgba(220, 53, 69, 1)';
+
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Fiyat (TL)',
+                        data: prices,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 3,
+                        pointBackgroundColor: pointBackgroundColor,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: isPositive ? '#28a745' : '#dc3545',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Fiyat: ${context.parsed.y.toFixed(2)} TL`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(2) + ' TL';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animations: {
+                        tension: {
+                            duration: 1000,
+                            easing: 'linear'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function displayPriceChange(stock) {
+            if (stock.priceHistory.length > 1) {
+                const currentPrice = stock.price;
+                const previousPrice = stock.priceHistory[1].price;
+                const change = currentPrice - previousPrice;
+                const changePercent = ((change / previousPrice) * 100).toFixed(2);
+
+                const changeElement = document.getElementById('modalChangePercent');
+                const amountElement = document.getElementById('modalChangeAmount');
+                const priceChangeElement = document.getElementById('modalPriceChange');
+
+                if (change > 0) {
+                    changeElement.className = 'fw-bold mb-0 text-success';
+                    changeElement.innerHTML = `+%${changePercent}`;
+                    amountElement.innerHTML = `+${change.toFixed(2)} TL`;
+                    priceChangeElement.innerHTML = `
+                        <span class="badge bg-success bg-opacity-20 text-success">
+                            <i class="fas fa-arrow-up me-1"></i>Yükseliş
+                        </span>
+                    `;
+                } else if (change < 0) {
+                    changeElement.className = 'fw-bold mb-0 text-danger';
+                    changeElement.innerHTML = `%${changePercent}`;
+                    amountElement.innerHTML = `${change.toFixed(2)} TL`;
+                    priceChangeElement.innerHTML = `
+                        <span class="badge bg-danger bg-opacity-20 text-danger">
+                            <i class="fas fa-arrow-down me-1"></i>Düşüş
+                        </span>
+                    `;
+                } else {
+                    changeElement.className = 'fw-bold mb-0 text-secondary';
+                    changeElement.innerHTML = `%0.00`;
+                    amountElement.innerHTML = `0.00 TL`;
+                    priceChangeElement.innerHTML = `
+                        <span class="badge bg-secondary bg-opacity-20 text-secondary">
+                            <i class="fas fa-minus me-1"></i>Sabit
+                        </span>
+                    `;
+                }
+            }
+        }
+        
+        function populatePriceHistory(priceHistory) {
+            const tbody = document.getElementById('modalPriceHistory');
+
+            if (priceHistory.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <i class="fas fa-history fa-2x mb-3"></i>
+                            <p>Fiyat geçmişi bulunamadı</p>
+                        </td>
+                    </tr>
+                `;
                 return;
             }
-            var buyRequest = {
-                Symbol: symbol,
-                Quantity: quantity
+
+            tbody.innerHTML = priceHistory.map((record, index) => {
+                let change = 0;
+                let changePercent = 0;
+                let status = 'stable';
+                let statusClass = 'secondary';
+                let statusIcon = 'minus';
+
+                if (index < priceHistory.length - 1) {
+                    const nextRecord = priceHistory[index + 1];
+                    change = record.price - nextRecord.price;
+                    changePercent = ((change / nextRecord.price) * 100).toFixed(2);
+
+                    if (change > 0) {
+                        status = 'up';
+                        statusClass = 'success';
+                        statusIcon = 'arrow-up';
+                    } else if (change < 0) {
+                        status = 'down';
+                        statusClass = 'danger';
+                        statusIcon = 'arrow-down';
+                    }
+                }
+
+                return `
+                    <tr>
+                        <td>
+                                    <small class="text-muted">${formatDate(record.recordedAt)}</small>
+                        </td>
+                        <td>
+                            <strong>${record.price.toFixed(2)} TL</strong>
+                        </td>
+                        <td class="text-${statusClass}">
+                            ${change > 0 ? '+' : ''}${change.toFixed(2)}
+                        </td>
+                        <td class="text-${statusClass}">
+                            ${change > 0 ? '+' : ''}${changePercent}%
+                        </td>
+                        <td>
+                            <span class="badge bg-${statusClass} bg-opacity-10 text-${statusClass}">
+                                <i class="fas fa-${statusIcon} me-1"></i>
+                                ${status === 'up' ? 'Yükseliş' : status === 'down' ? 'Düşüş' : 'Sabit'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function buyStock(stockId) {
+            const stock = allStocks.find(s => s.id == stockId);
+            if (!stock) {
+                alert('Hisse bulunamadı!');
+                return;
+            }
+
+            currentBuyStock = stock;
+            showBuyOrderModal(stock);
+        }
+        
+        function showBuyOrderModal(stock) {
+            document.getElementById('buyStockSymbol').value = stock.symbol;
+            document.getElementById('buyStockName').value = stock.name;
+            document.getElementById('currentMarketPrice').textContent = stock.price.toFixed(2) + ' TL';
+            document.getElementById('buyMaxPrice').value = stock.price.toFixed(2); 
+            document.getElementById('buyQuantity').addEventListener('input', updateEstimatedAmount);
+            document.getElementById('buyMaxPrice').addEventListener('input', updateEstimatedAmount);
+
+            updateEstimatedAmount();
+
+            const modal = new bootstrap.Modal(document.getElementById('buyOrderModal'));
+            modal.show();
+        }
+
+        function updateEstimatedAmount() {
+            const quantity = parseInt(document.getElementById('buyQuantity').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('buyMaxPrice').value) || 0;
+            const estimatedAmount = quantity * maxPrice;
+
+            document.getElementById('estimatedAmount').value = estimatedAmount.toFixed(2) + ' TL';
+        }
+
+        async function confirmBuyOrder() {
+            if (!currentBuyStock) return;
+
+            const quantity = parseInt(document.getElementById('buyQuantity').value);
+            const maxPrice = parseFloat(document.getElementById('buyMaxPrice').value);
+
+            if (!quantity || quantity <= 0) {
+                alert('Geçersiz lot miktarı!');
+                return;
+            }
+
+            if (!maxPrice || maxPrice <= 0) {
+                alert('Geçersiz fiyat!');
+                return;
+            }
+
+            const buyRequest = {
+                StockId: currentBuyStock.id,
+                Quantity: quantity,
+                MaxPrice: maxPrice
             };
-                fetch('/Stock/Buy', {
+
+            try {
+                const response = await fetch('/Stock/AddBuyOrder', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify( buyRequest)
-                }).then(response => {
-                    return response.json();
-                }).catch(error => {
-                    showAlert("Hata oluştu : "+error.message, "danger");
-                }).then(data=>{
-                    console.log(data);
-                    if(data.error){
-                        showAlert(data.error,"danger");
-                    }
-                    if(data.success){
-                        showAlert("Hisse alındı!", "success");
-                        document.querySelector("#balance").textContent=data.newBalance + " TL";
-                        loadStocks();
-                    }
+                    body: JSON.stringify(buyRequest)
                 });
-            
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert("Alım emriniz başarıyla verildi!", "success");
+                    document.querySelector("#balance").textContent = data.newBalance + " TL";
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('buyOrderModal'));
+                    modal.hide();
+                } else {
+                    showAlert(data.error || "Alım emri verilirken hata oluştu", "danger");
+                }
+            } catch (error) {
+                showAlert("Hata oluştu: " + error.message, "danger");
+            }
         }
-        
-        
+
+        function buyFromModal() {
+            if (currentModalStock) {
+                const detailModal = bootstrap.Modal.getInstance(document.getElementById('stockDetailModal'));
+                detailModal.hide();
+                setTimeout(() => {
+                    showBuyOrderModal(currentModalStock);
+                }, 300);
+            }
+        }
 
         function updatePagination(totalPages) {
             const pagination = document.getElementById('pagination');
@@ -459,7 +1013,6 @@
 
             let paginationHTML = '';
 
-            // Previous butonu
             paginationHTML += `
                 <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
                     <a class="page-link" href="javascript:void(0)" onclick="changePage(${currentPage - 1})">
@@ -468,11 +1021,9 @@
                 </li>
             `;
 
-            // Sayfa numaraları
             const startPage = Math.max(1, currentPage - 2);
             const endPage = Math.min(totalPages, currentPage + 2);
 
-            // İlk sayfa
             if (startPage > 1) {
                 paginationHTML += `
                     <li class="page-item">
@@ -482,7 +1033,6 @@
                 `;
             }
 
-            // Sayfa numaraları
             for (let i = startPage; i <= endPage; i++) {
                 paginationHTML += `
                     <li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -491,7 +1041,6 @@
                 `;
             }
 
-            // Son sayfa
             if (endPage < totalPages) {
                 paginationHTML += `
                     ${endPage < totalPages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
@@ -501,7 +1050,6 @@
                 `;
             }
 
-            // Next butonu
             paginationHTML += `
                 <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
                     <a class="page-link" href="javascript:void(0)" onclick="changePage(${currentPage + 1})">
@@ -514,31 +1062,3 @@
         }
     </script>
     }
-
-    <style>
-        .stock-symbol {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        
-        .table th {
-            border-top: none;
-            font-weight: 600;
-            color: #495057;
-        }
-        
-        .table-hover tbody tr:hover {
-            background-color: rgba(0, 123, 255, 0.04);
-        }
-        
-        .card {
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        
-        .card-header {
-            border-bottom: 1px solid #e3e6f0;
-        }
-    </style>

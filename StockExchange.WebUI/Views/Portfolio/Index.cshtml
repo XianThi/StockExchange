@@ -1,0 +1,404 @@
+﻿@model StockService.PortfolioResponse
+@{
+    ViewData["Title"] = "Portföyüm";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 text-primary">
+                <i class="fas fa-chart-pie me-2"></i>Portföyüm
+            </h1>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-muted mb-2">Toplam Portföy</h6>
+                            <h3 id="totalPortfolioValue" class="text-dark fw-bold mb-0">
+                                @(Model.Summary?.TotalPortfolioValue.ToString("N2") ?? "0.00") TL
+                            </h3>
+                        </div>
+                        <i class="fas fa-wallet fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-muted mb-2">Toplam Yatırım</h6>
+                            <h3 id="totalInvestment" class="text-dark fw-bold mb-0">
+                                @(Model.Summary?.TotalInvestment.ToString("N2") ?? "0.00") TL
+                            </h3>
+                        </div>
+                        <i class="fas fa-money-bill-wave fa-2x text-muted opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-muted mb-2">Kar/Zarar</h6>
+                            <h3 id="totalProfitLoss" class="fw-bold mb-0 @GetProfitLossClass(Model.Summary?.TotalProfitLoss ?? 0)">
+                                @(Model.Summary?.TotalProfitLoss.ToString("N2") ?? "0.00") TL
+                            </h3>
+                            <span id="profitLossPercent" class="small @GetProfitLossClass(Model.Summary?.TotalProfitLoss ?? 0)">
+                                @(Model.Summary?.TotalProfitLossPercent.ToString("N2") ?? "0.00")%
+                            </span>
+                        </div>
+                        <i class="fas fa-chart-line fa-2x text-muted opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-muted mb-2">Günlük Değişim</h6>
+                            <h3 id="dailyProfitLoss" class="fw-bold mb-0 @GetProfitLossClass(Model.Summary?.DailyProfitLoss ?? 0)">
+                                @(Model.Summary?.DailyProfitLoss.ToString("N2") ?? "0.00") TL
+                            </h3>
+                        </div>
+                        <i class="fas fa-sync-alt fa-2x text-muted opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-table me-2"></i>Portföy Detayları
+                    </h6>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="refreshPortfolio()">
+                            <i class="fas fa-sync-alt me-1"></i>Yenile
+                        </button>
+                        <a class="btn btn-sm btn-outline-success" href="@Url.Action("Transactions")">
+                            <i class="fas fa-history me-1"></i>İşlem Geçmişi
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="100">Sembol</th>
+                                    <th>Hisse Adı</th>
+                                    <th width="110">Toplam</th>
+                                    <th width="110">Ort. Maliyet</th>
+                                    <th width="110">Güncel Fiyat</th>
+                                    <th width="110">Değer</th>
+                                    <th width="120">Kar/Zarar</th>
+                                    <th width="100" class="text-center">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="portfolioTableBody">
+                                @if (Model.Items != null && Model.Items.Any())
+                                {
+                                    foreach (var item in Model.Items)
+                                    { 
+                                        <tr class="portfolio-main-row">
+                                            <td>
+                                                <span class="stock-symbol badge bg-primary bg-opacity-10 text-primary fs-6">
+                                                    @item.Symbol
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold">@item.Name</div>
+                                                @if (!string.IsNullOrEmpty(item.Description))
+                                                {
+                                                    <small class="text-muted">@item.Description</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-primary">@item.Quantity.ToString("N0")</span>
+                                                <small class="text-muted">lot</small>
+                                            </td>
+                                            <td>
+                                                @item.PurchasePrice.ToString("N2") TL
+                                                <br>
+                                                <small class="text-muted">(Ortalama)</small>
+                                            </td>
+                                            <td>@item.CurrentPrice.ToString("N2") TL</td>
+                                            <td>
+                                                <span class="fw-bold">@item.CurrentValue.ToString("N2") TL</span>
+                                            </td>
+                                            <td>
+                                                <span class="@GetProfitLossClass(item.ProfitLoss)">
+                                                    @item.ProfitLoss.ToString("N2") TL
+                                                    <br>
+                                                    <small>@item.ProfitLossPercent.ToString("N2")%</small>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group-vertical btn-group-sm">
+                                                    <button class="btn btn-outline-info btn-sm mb-1"
+                                                            onclick="showPurchaseHistory('@item.Symbol', '@item.Name')">
+                                                        <i class="fas fa-list"></i> Detay
+                                                    </button>
+                                                    <button class="btn btn-outline-warning btn-sm"
+                                                            onclick="showSellModal('@item.Symbol', '@item.Name', @item.Quantity, @item.CurrentPrice.ToString().Replace(",","."))">
+                                                        <i class="fas fa-cart-arrow-down"></i> Sat
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <i class="fas fa-folder-open fa-2x text-muted mb-3"></i>
+                                            <h5 class="text-muted">Portföyünüz boş</h5>
+                                            <p class="text-muted">Hisse alımı yaparak portföyünüzü oluşturun.</p>
+                                            <a href="@Url.Action("Index", "Stock")" class="btn btn-primary">
+                                                <i class="fas fa-shopping-cart me-1"></i>Hisse Al
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="purchaseHistoryModal" tabindex="-1" aria-labelledby="purchaseHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="purchaseHistoryModalLabel">
+                    <i class="fas fa-history me-2"></i>Alım Geçmişi - <span id="historyStockName"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Miktar</th>
+                                <th>Alış Fiyatı</th>
+                                <th>Toplam Maliyet</th>
+                                <th>Güncel Değer</th>
+                                <th>Kar/Zarar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="purchaseHistoryBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sellStockModal" tabindex="-1" aria-labelledby="sellStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="sellStockModalLabel">
+                    <i class="fas fa-cart-arrow-down me-2"></i>Hisse Satışı
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Sembol</label>
+                    <input type="text" class="form-control" id="sellStockSymbol" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Hisse Adı</label>
+                    <input type="text" class="form-control" id="sellStockName" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mevcut Miktar</label>
+                    <input type="text" class="form-control" id="sellStockQuantity" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Satış Miktarı</label>
+                    <input type="number" class="form-control" id="sellQuantity" min="1" step="1" placeholder="Satış miktarını girin">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Güncel Fiyat</label>
+                    <input type="text" class="form-control" id="sellCurrentPrice" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Minimum Satış Fiyatı (TL)</label>
+                    <input type="number" class="form-control" id="sellPrice" step="0.01" min="0.01" placeholder="En az satmaya razı olduğunuz fiyat">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tahmini Tutar</label>
+                    <input type="text" class="form-control" id="sellEstimatedAmount" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-warning" onclick="confirmSell()">Satış Emri Ver</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentSellStock = null;
+        function showSellModal(symbol, name, quantity, currentPrice) {
+            console.log(currentPrice);
+            currentSellStock = { symbol, name, quantity, currentPrice };
+
+            document.getElementById('sellStockSymbol').value = symbol;
+            document.getElementById('sellStockName').value = name;
+            document.getElementById('sellStockQuantity').value = quantity + ' lot';
+            document.getElementById('sellCurrentPrice').value = currentPrice.toFixed(2) + ' TL';
+            document.getElementById('sellPrice').value = currentPrice.toFixed(2);
+            document.getElementById('sellQuantity').value = 1;
+            document.getElementById('sellQuantity').max = quantity;
+
+            updateSellEstimatedAmount();
+            document.getElementById('sellQuantity').addEventListener('input', updateSellEstimatedAmount);
+            document.getElementById('sellPrice').addEventListener('input', updateSellEstimatedAmount);
+
+            const modal = new bootstrap.Modal(document.getElementById('sellStockModal'));
+            modal.show();
+        }
+
+        function updateSellEstimatedAmount() {
+            const quantity = parseInt(document.getElementById('sellQuantity').value) || 0;
+            const price = parseFloat(document.getElementById('sellPrice').value) || 0;
+            const estimatedAmount = quantity * price;
+
+            document.getElementById('sellEstimatedAmount').value = estimatedAmount.toFixed(2) + ' TL';
+        }
+
+        async function confirmSell() {
+            if (!currentSellStock) return;
+
+            const quantity = parseInt(document.getElementById('sellQuantity').value);
+            const price = parseFloat(document.getElementById('sellPrice').value);
+
+            if (!quantity || quantity <= 0) {
+                alert('Geçersiz lot miktarı!');
+                return;
+            }
+
+            if (quantity > currentSellStock.quantity) {
+                alert('Sahip olduğunuzdan daha fazla hisse satamazsınız!');
+                return;
+            }
+
+            if (!price || price <= 0) {
+                alert('Geçersiz fiyat!');
+                return;
+            }
+
+            const sellRequest = {
+                Symbol: currentSellStock.symbol,
+                Quantity: quantity,
+                MinPrice: price
+            };
+            console.log(currentSellStock);
+            try {
+                const response = await fetch('/Portfolio/AddSellOrder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(sellRequest)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Satış emriniz başarıyla verildi!');
+                    document.querySelector("#balance").textContent = data.newBalance + " TL";
+
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('sellStockModal'));
+                    modal.hide();
+                    refreshPortfolio();
+                } else {
+                    alert('Satış emri verilirken hata oluştu: ' + data.error);
+                }
+            } catch (error) {
+                alert('Hata oluştu: ' + error.message);
+            }
+        }
+
+        async function refreshPortfolio() {
+            try {
+                const response = await fetch('/Portfolio/GetPortfolioData');
+                const data = await response.json();
+
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Portföy yenilenirken hata: ' + data.error);
+                }
+            } catch (error) {
+                alert('Hata oluştu: ' + error.message);
+            }
+        }
+        async function showPurchaseHistory(symbol, name) {
+            try {
+                const response = await fetch(`/Portfolio/GetPurchaseHistory?symbol=${symbol}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('historyStockName').textContent = name + ` (${symbol})`;
+                    const tbody = document.getElementById('purchaseHistoryBody');
+
+                    tbody.innerHTML = data.purchaseHistory.map(purchase => `
+                        <tr>
+                            <td>${new Date(purchase.purchasedAt).toLocaleDateString('tr-TR')}</td>
+                            <td>${purchase.quantity.toLocaleString('tr-TR')} lot</td>
+                            <td>${purchase.purchasePrice.toFixed(2)} TL</td>
+                            <td>${purchase.totalCost.toFixed(2)} TL</td>
+                            <td>${purchase.currentValue.toFixed(2)} TL</td>
+                            <td class="${purchase.profitLoss >= 0 ? 'text-success' : 'text-danger'}">
+                                ${purchase.profitLoss >= 0 ? '+' : ''}${purchase.profitLoss.toFixed(2)} TL
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    const modal = new bootstrap.Modal(document.getElementById('purchaseHistoryModal'));
+                    modal.show();
+                } else {
+                    alert('Alım geçmişi yüklenirken hata: ' + data.error);
+                }
+            } catch (error) {
+                alert('Hata oluştu: ' + error.message);
+            }
+        }
+    </script>
+}
+
+@functions {
+    public string GetProfitLossClass(decimal profitLoss)
+    {
+        return profitLoss > 0 ? "text-success" : profitLoss < 0 ? "text-danger" : "text-secondary";
+    }
+}

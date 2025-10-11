@@ -1,6 +1,10 @@
 ﻿using Dapper;
 using StockExchange.Core.Interfaces.Repositories;
+using StockExchange.Core.Models;
+using StockExchange.Core.Models.OrderModel;
+using StockExchange.Core.Models.PortfolioModel;
 using StockExchange.Core.Models.StockModel;
+using StockExchange.Core.Models.TransactionModel;
 using StockExchange.Core.Models.UserModel;
 using System;
 using System.Collections.Generic;
@@ -28,58 +32,7 @@ namespace StockExchange.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<BuyStockResponse> BuyStock(BuyStockRequest request)
-        {
-            var user = await _dbConnection.QueryFirstOrDefaultAsync("select *from Users where Id=@Id", new { Id = request.UserId });
-            if (user == null)
-            {
-                return new BuyStockResponse { Success = 0, Message = "Kullanıcı bulunamadı." };
-            }
-            var stock = await _dbConnection.QueryFirstOrDefaultAsync("select *from Stocks where Symbol=@Symbol", new { Symbol = request.Symbol });
-            if (stock == null)
-            {
-                return new BuyStockResponse { Success = 0, Message = "Hisse senedi bulunamadı." };
-            }
-            var totalPrice = stock.Price * request.Quantity;
-            if (user.Balance < totalPrice)
-            {
-                return new BuyStockResponse { Success = 0, Message = "Yetersiz bakiye." };
-            }
-            if (stock.Quantity < request.Quantity)
-            {
-                return new BuyStockResponse { Success = 0, Message = "Yetersiz hisse senedi miktarı." };
-            }
-            _dbConnection.Open();
-            using (var transaction = _dbConnection.BeginTransaction())
-            {
-                try
-                {
-                    var updateUserSql = "update Users set Balance=Balance-@Amount where Id=@Id";
-                    await _dbConnection.ExecuteAsync(updateUserSql, new { Amount = totalPrice, Id = user.Id }, transaction);
-                    var updateStockSql = "update Stocks set Quantity=Quantity-@Quantity where Id=@Id";
-                    await _dbConnection.ExecuteAsync(updateStockSql, new { Quantity = request.Quantity, Id = stock.Id }, transaction);
-                    var insertTransactionSql = "insert into UserStock (UserId, StockId, Quantity, PurchasePrice, PurchasedAt) values (@UserId, @StockId, @Quantity, @Price, @TransactionDate)";
-                    await _dbConnection.ExecuteAsync(insertTransactionSql, new
-                    {
-                        UserId = user.Id,
-                        StockId = stock.Id,
-                        Quantity = request.Quantity,
-                        Price = stock.Price,
-                        TransactionDate = DateTime.UtcNow
-                    }, transaction);
-                    transaction.Commit();
-                    var updatedUser = await _dbConnection.QueryFirstOrDefaultAsync<User>("select *from Users where Id=@Id", new { Id = user.Id });
-                    _dbConnection.Close();
-                    return new BuyStockResponse { Success = 1, Message = "Hisse senedi başarıyla satın alındı.", UpdatedUser = updatedUser };
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    _dbConnection.Close();
-                    return new BuyStockResponse { Success = 0, Message = "Hata oluştu: " + ex.Message };
-                }
-            }
-        }
+      
 
         public async Task<CreateUserResponse> CreateUser(CreateUserRequest request)
         {
@@ -140,6 +93,12 @@ namespace StockExchange.DAL.Repositories
                 Offset = offset,
                 PageSize = pageSize
             });
+            var stockPriceHistorySql = "SELECT TOP 3 * FROM StockPriceHistory WHERE StockId = @StockId ORDER BY RecordedAt DESC";
+            foreach (var stock in stocks)
+            {
+                var priceHistory = await _dbConnection.QueryAsync<StockPriceHistory>(stockPriceHistorySql, new { StockId = stock.Id });
+                stock.PriceHistory = priceHistory.ToList();
+            }
 
             var totalCount = await _dbConnection.ExecuteScalarAsync<int>(
                 "SELECT COUNT(*) FROM Stocks");
@@ -174,6 +133,215 @@ namespace StockExchange.DAL.Repositories
             return new LoginResponse { };
         }
 
+        public Task<bool> UpdatePricesAsync()
+        {
+            var random = new Random();
+            var stocks = _dbConnection.Query<Stock>("select *from Stocks").ToList();
+            foreach (var stock in stocks)
+            {
+                if(stock.Price <= 0)
+                {
+                    stock.Price = (decimal)random.NextDouble()*10; // 0-10 arası başlangıç fiyatı
+                }
+                var changePercent = (decimal)(random.NextDouble() * 0.2 - 0.1); // +-%10
+                var newPrice = stock.Price + (stock.Price * changePercent);
+                newPrice = Math.Round(newPrice, 2);
+                if (newPrice < 0.01m) newPrice = 0.01m;
+                var updateSql = "update Stocks set Price=@Price, LastUpdated=@LastUpdated where Symbol=@Symbol";
+                _dbConnection.Execute(updateSql, new { Price = newPrice, LastUpdated = DateTime.UtcNow, Symbol = stock.Symbol});
+                var insertHistorySql = "insert into StockPriceHistory (StockId, Price, RecordedAt) values (@StockId, @Price, @RecordedAt)";
+                _dbConnection.Execute(insertHistorySql, new { StockId = stock.Id, Price = newPrice, RecordedAt = DateTime.UtcNow });
+            }
+            return Task.FromResult(true);
+        }
+
+        public async Task<IEnumerable<StockPriceHistory>> GetPriceHistoryWithSymbol(string symbol)
+        {
+            var stockSql = "select *from Stocks where Symbol = @Symbol";
+            var stock = await _dbConnection.QueryFirstAsync<Stock>(stockSql, new { Symbol = symbol });
+            if (stock == null)
+            {
+                return Enumerable.Empty<StockPriceHistory>();
+            }
+            var sql = "SELECT * FROM StockPriceHistory WHERE StockId = @StockId ORDER BY RecordedAt DESC";
+            var priceHistory = await _dbConnection.QueryAsync<StockPriceHistory>(sql, new { StockId = stock.Id });
+            return priceHistory;
+        }
+
+        public async Task<List<PortfolioItem>> GetUserPortfolioAsync(int userId)
+        {
+            try
+            {
+                var portfolio = await _dbConnection.QueryAsync<PortfolioItem>(
+                    "GetUserPortfolio",
+                    new { UserId = userId },
+                    commandType: CommandType.StoredProcedure
+                );
+                return portfolio.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Portföy getirme hatası: {ex.Message}");
+                return new List<PortfolioItem>();
+            }
+        }
+
+        public async Task<PortfolioSummary> GetPortfolioSummaryAsync(int userId)
+        {
+            try
+            {
+                var summary = await _dbConnection.QueryFirstOrDefaultAsync<PortfolioSummary>(
+                    "GetPortfolioSummary",
+                    new { UserId = userId },
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return summary ?? new PortfolioSummary();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Portföy özeti getirme hatası: {ex.Message}");
+                return new PortfolioSummary();
+            }
+        }
+
+        public async Task<List<TransactionHistory>> GetUserTransactionsAsync(int userId)
+        {
+            try
+            {
+                var transactions = await _dbConnection.QueryAsync<TransactionHistory>(
+                    "GetUserTransactions",
+                    new { UserId = userId },
+                    commandType: CommandType.StoredProcedure
+                );
+                return transactions.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"İşlem geçmişi getirme hatası: {ex.Message}");
+                return new List<TransactionHistory>();
+            }
+        }
+        public async Task<BuyStockResponse> BuyStockAsync(int userId, int stockId, int quantity)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("UserId", userId);
+                parameters.Add("StockId", stockId);
+                parameters.Add("Quantity", quantity);
+
+                var result = await _dbConnection.QueryFirstOrDefaultAsync<BuyStockResult>(
+                    "BuyStock",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+                if (result.Result.Equals("SUCCESS"))
+                {
+                    return new BuyStockResponse
+                    {
+                        Success = true,
+                        Message = "Hisse senedi başarıyla satın alındı.",
+                        NewBalance = result.NewBalance,
+                        TotalAmount = result.TotalAmount,
+                        ExecutedPrice = result.ExecutedPrice
+                    };
+                }
+                return new BuyStockResponse { Success = false, Message = result.ErrorMessage };
+            }
+            catch (Exception ex)
+            {
+                return new BuyStockResponse { Success = false, Message = ex.Message };
+            }
+        }
+        public async Task<SellStockResponse> SellStockAsync(int userId, int stockId, int quantity, decimal currentPrice)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("UserId", userId);
+                parameters.Add("StockId", stockId);
+                parameters.Add("Quantity", quantity);
+                parameters.Add("CurrentPrice", currentPrice);
+
+                var result = await _dbConnection.QueryFirstOrDefaultAsync<SellStockResponse>(
+                    "SellStock",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return result ?? new SellStockResponse { Success = false, Message = "Satış işlemi sonucu alınamadı" };
+            }
+            catch (Exception ex)
+            {
+                return new SellStockResponse { Success = false, Message = ex.Message };
+            }
+        }
+
+        public async Task<OrderResult> AddBuyOrderAsync(int userId, int stockId, int quantity, decimal price)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("UserId", userId);
+                parameters.Add("StockId", stockId);
+                parameters.Add("Quantity", quantity);
+                parameters.Add("Price", price);
+
+                var result = await _dbConnection.QueryFirstOrDefaultAsync<OrderResult>(
+                    "AddBuyOrder",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return result ?? new OrderResult { Success = false, Message = "Alım emri eklenemedi" };
+            }
+            catch (Exception ex)
+            {
+                return new OrderResult { Success = false, Message = ex.Message };
+            }
+        }
+
+        public async Task<OrderResult> AddSellOrderAsync(int userId, int stockId, int quantity, decimal price)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("UserId", userId);
+                parameters.Add("StockId", stockId);
+                parameters.Add("Quantity", quantity);
+                parameters.Add("Price", price);
+
+                var result = await _dbConnection.QueryFirstOrDefaultAsync<OrderResult>(
+                    "AddSellOrder",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return result ?? new OrderResult { Success = false, Message = "Satış emri eklenemedi" };
+            }
+            catch (Exception ex)
+            {
+                return new OrderResult { Success = false, Message = ex.Message };
+            }
+        }
+        public async Task<List<PurchaseDetail>> GetUserStockPurchaseHistoryAsync(int userId, string stockSymbol)
+        {
+            try
+            {
+                var purchaseHistory = await _dbConnection.QueryAsync<PurchaseDetail>(
+                    "GetUserStockPurchaseHistory",
+                    new { UserId = userId, StockSymbol = stockSymbol },
+                    commandType: CommandType.StoredProcedure
+                );
+                return purchaseHistory.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Alım geçmişi getirme hatası: {ex.Message}");
+                return new List<PurchaseDetail>();
+            }
+        }
         public Task UpdateStockAsync(Stock stock)
         {
             throw new NotImplementedException();

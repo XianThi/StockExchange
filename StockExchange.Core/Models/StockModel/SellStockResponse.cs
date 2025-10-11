@@ -1,5 +1,4 @@
-﻿using StockExchange.Core.Models.UserModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 namespace StockExchange.Core.Models.StockModel
 {
     [DataContract]
-    public class BuyStockResponse
+    public class SellStockResponse
     {
         [DataMember]
         public bool Success { get; set; }
@@ -19,7 +18,5 @@ namespace StockExchange.Core.Models.StockModel
         public decimal NewBalance { get; set; }
         [DataMember]
         public decimal TotalAmount { get; set; }
-        [DataMember]
-        public decimal ExecutedPrice { get; set; }
     }
 }

@@ -1,4 +1,8 @@
-﻿using StockExchange.Core.Models.StockModel;
+﻿using StockExchange.Core.Models;
+using StockExchange.Core.Models.OrderModel;
+using StockExchange.Core.Models.PortfolioModel;
+using StockExchange.Core.Models.StockModel;
+using StockExchange.Core.Models.TransactionModel;
 using StockExchange.Core.Models.UserModel;
 using System;
 using System.Collections.Generic;
@@ -20,6 +24,16 @@ namespace StockExchange.Core.Interfaces.Repositories
 
         Task<CreateUserResponse> CreateUser(CreateUserRequest request);
         Task<LoginResponse> Login(LoginRequest request);
-        Task<BuyStockResponse> BuyStock(BuyStockRequest request);
+
+        Task<IEnumerable<StockPriceHistory>> GetPriceHistoryWithSymbol(string symbol);
+        Task<bool> UpdatePricesAsync();
+        Task<List<PortfolioItem>> GetUserPortfolioAsync(int userId);
+        Task<PortfolioSummary> GetPortfolioSummaryAsync(int userId);
+        Task<List<TransactionHistory>> GetUserTransactionsAsync(int userId);
+        Task<SellStockResponse> SellStockAsync(int userId, int stockId, int quantity, decimal currentPrice);
+        Task<BuyStockResponse> BuyStockAsync(int userId, int stockId, int quantity);
+        Task<OrderResult> AddBuyOrderAsync(int userId, int stockId, int quantity, decimal price);
+        Task<OrderResult> AddSellOrderAsync(int userId, int stockId, int quantity, decimal price);
+        Task<List<PurchaseDetail>> GetUserStockPurchaseHistoryAsync(int userId, string stockSymbol);
     }
 }
